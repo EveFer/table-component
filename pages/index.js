@@ -1,71 +1,180 @@
 import Head from 'next/head'
-import Image from 'next/image'
-import styles from '../styles/Home.module.css'
+import MUIDataTable from "mui-datatables";
+import TableRow from '@mui/material/TableRow';
+import TableCell from '@mui/material/TableCell';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
+import { ExpandButton } from '../components/Table/ExpandButton'
+
+
 
 export default function Home() {
+  const columns = [
+    {
+      name: 'Name',
+      options: {
+        filter: true,
+      },
+    },
+    {
+      name: 'Title',
+      options: {
+        filter: true,
+      },
+    },
+    {
+      name: 'Location',
+      options: {
+        filter: false,
+      },
+    },
+    {
+      name: 'Age',
+      options: {
+        filter: true,
+      },
+    },
+    {
+      name: 'Salary',
+      options: {
+        filter: true,
+        sort: false,
+      },
+    },
+    {
+      name: "Edit",
+      options: {
+        filter: true,
+        sort: false,
+        empty: true,
+        customBodyRender: (value, tableMeta, updateValue) => {
+          return (
+            <button onClick={() => window.alert(`Clicked "Edit" for row ${tableMeta.rowIndex}`)}>
+              Edit
+            </button>
+          );
+        }
+      }
+    },
+    {
+      name: "Delete",
+      options: {
+        filter: true,
+        sort: false,
+        empty: true,
+        customBodyRender: (value, tableMeta, updateValue) => {
+          return (
+            <button onClick={() => {
+              const { data } = this.state;
+              data.shift();
+              this.setState({ data });
+            }}>
+              Delete
+            </button>
+          );
+        }
+      }
+    },
+  ];
+  
+  const data = [
+    ['Gabby George', 'Business Analyst', 'Minneapolis', 30, '$100,000'],
+    ['Aiden Lloyd', 'Business Consultant', 'Dallas', 55, '$200,000'],
+    ['Jaden Collins', 'Attorney', 'Santa Ana', 27, '$500,000'],
+    ['Franky Rees', 'Business Analyst', 'St. Petersburg', 22, '$50,000'],
+    ['Aaren Rose', 'Business Consultant', 'Toledo', 28, '$75,000'],
+    ['Blake Duncan', 'Business Management Analyst', 'San Diego', 65, '$94,000'],
+    ['Frankie Parry', 'Agency Legal Counsel', 'Jacksonville', 71, '$210,000'],
+    ['Lane Wilson', 'Commercial Specialist', 'Omaha', 19, '$65,000'],
+    ['Robin Duncan', 'Business Analyst', 'Los Angeles', 20, '$77,000'],
+    ['Mel Brooks', 'Business Consultant', 'Oklahoma City', 37, '$135,000'],
+    ['Harper White', 'Attorney', 'Pittsburgh', 52, '$420,000'],
+    ['Kris Humphrey', 'Agency Legal Counsel', 'Laredo', 30, '$150,000'],
+    ['Frankie Long', 'Industrial Analyst', 'Austin', 31, '$170,000'],
+    ['Brynn Robbins', 'Business Analyst', 'Norfolk', 22, '$90,000'],
+    ['Justice Mann', 'Business Consultant', 'Chicago', 24, '$133,000'],
+    ['Addison Navarro', 'Business Management Analyst', 'New York', 50, '$295,000'],
+    ['Jesse Welch', 'Agency Legal Counsel', 'Seattle', 28, '$200,000'],
+    ['Eli Mejia', 'Commercial Specialist', 'Long Beach', 65, '$400,000'],
+    ['Gene Leblanc', 'Industrial Analyst', 'Hartford', 34, '$110,000'],
+    ['Danny Leon', 'Computer Scientist', 'Newark', 60, '$220,000'],
+    ['Lane Lee', 'Corporate Counselor', 'Cincinnati', 52, '$180,000'],
+    ['Jesse Hall', 'Business Analyst', 'Baltimore', 44, '$99,000'],
+    ['Danni Hudson', 'Agency Legal Counsel', 'Tampa', 37, '$90,000'],
+    ['Terry Macdonald', 'Commercial Specialist', 'Miami', 39, '$140,000'],
+    ['Justice Mccarthy', 'Attorney', 'Tucson', 26, '$330,000'],
+    ['Silver Carey', 'Computer Scientist', 'Memphis', 47, '$250,000'],
+    ['Franky Miles', 'Industrial Analyst', 'Buffalo', 49, '$190,000'],
+    ['Glen Nixon', 'Corporate Counselor', 'Arlington', 44, '$80,000'],
+    ['Gabby Strickland', 'Business Process Consultant', 'Scottsdale', 26, '$45,000'],
+    ['Mason Ray', 'Computer Scientist', 'San Francisco', 39, '$142,000'],
+  ];
+  
+  const options = {
+    filter: true,
+    filterType: 'dropdown',
+    responsive: 'standard',
+    selectableRows: false,
+    expandableRows: true,
+    expandableRowsHeader: false,
+    expandableRowsOnClick: true,
+    isRowExpandable: (dataIndex, expandedRows) => {
+      if (dataIndex === 3 || dataIndex === 4) return false;
+  
+      // Prevent expand/collapse of any row if there are 4 rows expanded already (but allow those already expanded to be collapsed)
+      if (expandedRows.data.length > 4 && expandedRows.data.filter(d => d.dataIndex === dataIndex).length === 0)
+        return false;
+      return true;
+    },
+    rowsExpanded: [0, 1],
+    renderExpandableRow: (rowData, rowMeta) => {
+      const colSpan = rowData.length + 1;
+      return (
+        <TableRow>
+          <TableCell colSpan={colSpan}>Custom expandable row option. Data: {JSON.stringify(rowData)}</TableCell>
+        </TableRow>
+      );
+    },
+    onRowExpansionChange: (curExpanded, allExpanded, rowsExpanded) =>
+      console.log(curExpanded, allExpanded, rowsExpanded),
+  };
+  
+  const theme = createTheme({
+    overrides: {
+      MUIDataTableSelectCell: {
+        expandDisabled: {
+          // Soft hide the button.
+          visibility: 'hidden',
+        },
+      },
+    },
+  });
+
+  const components = {
+    ExpandButton: function(props) {
+      if (props.dataIndex === 3 || props.dataIndex === 4) return <div style={{ width: '24px' }} />;
+      return <ExpandButton {...props} />;
+    },
+  };
+
+
   return (
-    <div className={styles.container}>
+    <div >
       <Head>
         <title>Create Next App</title>
         <meta name="description" content="Generated by create next app" />
         <link rel="icon" href="/favicon.ico" />
       </Head>
 
-      <main className={styles.main}>
-        <h1 className={styles.title}>
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
-        </h1>
-
-        <p className={styles.description}>
-          Get started by editing{' '}
-          <code className={styles.code}>pages/index.js</code>
-        </p>
-
-        <div className={styles.grid}>
-          <a href="https://nextjs.org/docs" className={styles.card}>
-            <h2>Documentation &rarr;</h2>
-            <p>Find in-depth information about Next.js features and API.</p>
-          </a>
-
-          <a href="https://nextjs.org/learn" className={styles.card}>
-            <h2>Learn &rarr;</h2>
-            <p>Learn about Next.js in an interactive course with quizzes!</p>
-          </a>
-
-          <a
-            href="https://github.com/vercel/next.js/tree/canary/examples"
-            className={styles.card}
-          >
-            <h2>Examples &rarr;</h2>
-            <p>Discover and deploy boilerplate example Next.js projects.</p>
-          </a>
-
-          <a
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-            className={styles.card}
-          >
-            <h2>Deploy &rarr;</h2>
-            <p>
-              Instantly deploy your Next.js site to a public URL with Vercel.
-            </p>
-          </a>
-        </div>
-      </main>
-
-      <footer className={styles.footer}>
-        <a
-          href="https://vercel.com?utm_source=create-next-app&utm_medium=default-template&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Powered by{' '}
-          <span className={styles.logo}>
-            <Image src="/vercel.svg" alt="Vercel Logo" width={72} height={16} />
-          </span>
-        </a>
-      </footer>
+      <ThemeProvider theme={theme}>
+        <MUIDataTable
+          title={'ACME Employee list'}
+          data={data}
+          columns={columns}
+          options={options}
+          components={components}
+        />
+      </ThemeProvider>
     </div>
   )
 }
